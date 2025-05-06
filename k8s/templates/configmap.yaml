@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-env
+  labels:
+    {{- include "eks-spot-termination-monitor.commonLabels" . | nindent 4 }}
+data:
+  .env: |
+    LOG_LEVEL="{{ .Values.appConfig.LOG_LEVEL }}"
+    WORK_DIR="{{ .Values.appConfig.WORK_DIR }}"
+    KUBECONFIG="{{ .Values.appConfig.KUBECONFIG }}"
+    GO_WORKERS={{ .Values.appConfig.GO_WORKERS }}
+    QUEUE_URL="{{ .Values.appConfig.QUEUE_URL }}"
+    CLIENT_POLL_FREQUENCY={{ .Values.appConfig.CLIENT_POLL_FREQUENCY }}
+    SQS_MAX_MESSAGE_COUNT={{ .Values.appConfig.SQS_MAX_MESSAGE_COUNT }}
+    SQS_POLLING_INTERVAL={{ .Values.appConfig.SQS_POLLING_INTERVAL }}
+    SQS_VISIBILITY_TIMEOUT={{ .Values.appConfig.SQS_VISIBILITY_TIMEOUT }}
