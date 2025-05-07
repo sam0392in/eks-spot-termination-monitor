@@ -42,10 +42,10 @@ var (
 		[]string{"instance_type"},
 	)
 
-	InterruptionsByInstanceTypeAtGivenTime = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Name: "eks_spot_interruptions_by_instance_type",
-			Help: "Gauge set to 1 when an interruption is seen; can be used with timestamp.",
+	InterruptionsByInstanceTypeAtGivenTime = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "eks_spot_interruptions_by_instance_type_total",
+			Help: "Total number of spot instance interruptions by instance type.",
 		},
 		[]string{"instance_type"},
 	)

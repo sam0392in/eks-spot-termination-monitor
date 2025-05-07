@@ -182,7 +182,10 @@ eks-spot-termination-monitor/eks-spot-termination-monitor \
 
 ### Verify the Application
 ```bash
-kubectl get pods -n kube-system -l app=eks-spot-termination-monitor
+>> kubectl get pods -n kube-system -l app=eks-spot-termination-monitor
+
+eks-spot-termination-monitor-74d97876cf-8kvsz  1/1     Running   0  25s
+
 ```
 
 ### Check the logs
@@ -206,7 +209,7 @@ eks_spot_interruption_last_seen
 
 - Most interrupted instance types:
 ```prometheus
-sum(eks_spot_interruptions_by_instance_type) by (instance_type)
+sum(eks_spot_interruptions_by_instance_type_over_lifetime) by (instance_type)
 ```
 ![Alt text](docs/most-interrupted-instance-types.png "Most Interrupted Instance Types")
 
