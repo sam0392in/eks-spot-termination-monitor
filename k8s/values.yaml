@@ -68,25 +68,24 @@ appConfig:
   LOG_LEVEL: "debug"
   WORK_DIR: "/home/"
   KUBECONFIG: "/Users/sam/.kube/config" # Change this to your kubeconfig path in case you are using kubeconfig instead of in-cluster config
-  GO_WORKERS: "1" # Number of parallel executors to process the messages from SQS
+  GO_WORKERS: "2" # Number of parallel executors to process the messages from SQS
   QUEUE_URL: "https://sqs.eu-west-1.amazonaws.com/6086785001234/eks-spot-termination-monitor" # Change this to your SQS URL
   ## Polling configuration
-  CLIENT_POLL_FREQUENCY: "5"
+  CLIENT_POLL_FREQUENCY: "4" # Frequency of polling the SQS queue
   SQS_MAX_MESSAGE_COUNT: "1"
-  SQS_POLLING_INTERVAL: "20"
+  SQS_POLLING_INTERVAL: "20" # Long Polling
   SQS_VISIBILITY_TIMEOUT: "30"
 
 ## Monitoring
 monitoring:
   enabled: true
   prometheusLabel:
-    app: centralised-application-prometheus
+    release: centralized-application-metrics
   endpoints:
-    - interval: 5s
+    - interval: 10s
       path: /metrics
       port: http
       scheme: http
-      scrapeTimeout: 30s
 
     
   

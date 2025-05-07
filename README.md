@@ -182,13 +182,26 @@ eks-spot-termination-monitor/eks-spot-termination-monitor \
 
 ### Verify the Application
 ```bash
-kubectl get pods -n kube-system -l app=eks-spot-termination-monitor
+>> kubectl get pods -n kube-system -l app=eks-spot-termination-monitor
+
+eks-spot-termination-monitor-74d97876cf-8kvsz  1/1     Running   0  25s
+
 ```
 
 ### Check the logs
-```bash
+Logs contain useful information about:
+1. Name of Pods Impacted.
+2. Instance Type.
+3. Node Name.
+4. Instance ID.
+5. Instance architecture.
+6 timestamp of the interruption.
 
+Sample Log:
+```bash
+{"EC2SPOTEvent":"terminate","ImpactedPod":"alpha-safrwg-1235f34","InstanceArch":"x86_64","InstanceID":"i-07186901d1e551247","InstanceState":"terminating","InstanceType":"m5a.xlarge","NodeName":"ip-172-83-122-224.us-east-1.compute.internal","PodNamespace":"alpha","PodState":"Terminating","level":"info","msg":"SPOT termination captured","time":"2025-05-08T07:46:23Z"}
 ```
+
 Dashboard from logs in Kibana:
 ![Alt text](docs/kibana-dashboard.png "Kibana Dashboard")
 
@@ -206,7 +219,7 @@ eks_spot_interruption_last_seen
 
 - Most interrupted instance types:
 ```prometheus
-sum(eks_spot_interruptions_by_instance_type) by (instance_type)
+sum(eks_spot_interruptions_by_instance_type_over_lifetime) by (instance_type)
 ```
 ![Alt text](docs/most-interrupted-instance-types.png "Most Interrupted Instance Types")
 

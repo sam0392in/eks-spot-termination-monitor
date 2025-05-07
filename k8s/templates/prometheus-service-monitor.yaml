@@ -10,15 +10,11 @@ spec:
   selector:
     matchLabels:
       {{- include "eks-spot-termination-monitor.commonLabels" . | nindent 6 }}
-  namespaceSelector:
-    matchNames:
-      - {{ .Release.Namespace }}
   endpoints:
     {{- range .Values.monitoring.endpoints }}
     - interval: {{ .interval | quote }}
       path: {{ .path | quote }}
       port: {{ .port | quote }}
       scheme: {{ .scheme | quote }}
-      scrapeTimeout: {{ .scrapeTimeout | quote }}
     {{- end }}
 {{- end }}

@@ -29,9 +29,10 @@ import (
 )
 
 var (
-	logger      = logging.Log()
-	sqsMessages = make(chan types.Message)
-	wg          sync.WaitGroup
+	logger        = logging.Log()
+	sqsMessages   = make(chan types.Message)
+	wg            sync.WaitGroup
+	lastEventTime = time.Now()
 )
 
 // Wait blocks until all wg.Done() are called
@@ -62,9 +63,10 @@ func PollQueue(stopChan chan struct{}) {
 				logger.Debug("No messages in queue, next poll in " + clientPollFrequencyStr + " seconds")
 
 				// Reset metrics when no event is received
-				monitoring.InterruptionsGauge.WithLabelValues().Set(0)
-				monitoring.PodsImpacted.WithLabelValues().Set(0)
-				monitoring.InterruptionsByInstanceTypeAtGivenTime.Reset()
+				if time.Since(lastEventTime) > time.Duration(clientPollFrequency)*time.Second {
+					monitoring.InterruptionsGauge.WithLabelValues().Set(0)
+					monitoring.PodsImpacted.WithLabelValues().Set(0)
+				}
 				continue
 			}
 

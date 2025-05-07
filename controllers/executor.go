@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	logging "github.com/sirupsen/logrus"
+	"time"
 )
 
 func Executor(id int) {
@@ -51,7 +52,9 @@ func processMessage(msg types.Message) bool {
 
 	// Instance type-based metrics
 	monitoring.InterruptionsByInstanceTypeOverLifetime.WithLabelValues(string(ec2Details.InstanceType)).Inc()
-	monitoring.InterruptionsByInstanceTypeAtGivenTime.WithLabelValues(string(ec2Details.InstanceType)).Set(1)
+	monitoring.InterruptionsByInstanceTypeAtGivenTime.WithLabelValues(string(ec2Details.InstanceType)).Inc()
+
+	lastEventTime = time.Now()
 
 	// Fetch Impacted Pods
 	pods, err := k8s.TrackImpactedPods(*ec2Details.PrivateDNSName)
