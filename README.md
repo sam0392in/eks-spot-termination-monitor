@@ -152,7 +152,7 @@ Add Sqs queue as target to the EventBridge rule created above.
 
 ```bash
 aws events put-targets \
-  --rule "EC2SpotInterruptionRule" \
+  --rule "eks-spot-termination-monitor" \
   --targets "[
     {
       \"Id\": \"SendToSQS\",
