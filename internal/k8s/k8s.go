@@ -83,7 +83,7 @@ func TrackImpactedPods(nodeName string) (*[]ImpactedPod, error) {
 		logger.Panicln("Error creating Kubernetes client", err)
 	}
 
-	// Use a context with a timeout to avoid hanging indefinitely, otherwise if API is stuck, app will be blocked unnecessarily.
+	// Using context with a timeout to avoid hanging indefinitely, otherwise if API is stuck, app will be blocked unnecessarily.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
