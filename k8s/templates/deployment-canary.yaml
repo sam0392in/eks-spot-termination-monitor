@@ -1,0 +1,44 @@
+{{- if .Values.canary.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "eks-spot-termination-monitor.commonLabels" . | nindent 4 }}
+    env: canary
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "eks-spot-termination-monitor.commonLabels" . | nindent 6 }}
+      env: canary
+  template:
+    metadata:
+      labels:
+        {{- include "eks-spot-termination-monitor.commonLabels" . | nindent 8 }}
+        env: canary
+        {{- if .Values.additionalPodLabels }}
+{{ toYaml .Values.additionalPodLabels | indent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.serviceAccount.enabled }} 
+      serviceAccountName: {{ .Release.Name }}
+      {{- end }}
+{{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - name: {{ .Release.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        env:
+{{ toYaml .Values.env | indent 10 }}
+{{- end -}}

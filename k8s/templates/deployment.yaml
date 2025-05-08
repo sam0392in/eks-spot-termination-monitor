@@ -1,0 +1,52 @@
+{{- if not .Values.canary.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "eks-spot-termination-monitor.commonLabels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "eks-spot-termination-monitor.commonLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "eks-spot-termination-monitor.commonLabels" . | nindent 8 }}
+        {{- if .Values.additionalPodLabels }}
+{{ toYaml .Values.additionalPodLabels | indent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Release.Name }}
+      {{- end }}
+{{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+{{- end }}
+{{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+{{- end }}
+      containers:
+      - name: {{ .Release.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.containerPort }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+        env:
+{{ toYaml .Values.env | indent 10 }}
+        volumeMounts:
+          - name: config-volume
+            mountPath: /home/config/.env
+            subPath: .env
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Release.Name }}-env
+            items:
+              - key: .env
+                path: .env
+{{- end -}}

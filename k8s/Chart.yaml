@@ -1,0 +1,7 @@
+apiVersion: v1
+name: eks-spot-termination-monitor
+description: eks-spot-termination-monitor is a lightweight Go service that runs inside an EKS cluster to monitor and expose metrics for EC2 Spot Instance interruption notices. These metrics are designed to be scraped by Prometheus and used to create real-time alerts and dashboards for node termination events.
+
+version: "0.1.0"
+maintainers:
+  - name: Sam

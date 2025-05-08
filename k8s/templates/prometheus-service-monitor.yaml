@@ -1,0 +1,20 @@
+{{- if .Values.monitoring.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- .Values.monitoring.prometheusLabel | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "eks-spot-termination-monitor.commonLabels" . | nindent 6 }}
+  endpoints:
+    {{- range .Values.monitoring.endpoints }}
+    - interval: {{ .interval | quote }}
+      path: {{ .path | quote }}
+      port: {{ .port | quote }}
+      scheme: {{ .scheme | quote }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,92 @@
+replicas: 1
+
+image:
+  repository: "sam0392in/eks-spot-termination-monitor"
+  tag: latest
+
+containerPort: 2112
+
+service:
+  type: ClusterIP
+  port: 80
+
+
+additionalPodLabels: {}
+#  nature: serverless
+
+serviceAccount:
+  enabled: true
+  annotations:
+     eks.amazonaws.com/role-arn: arn:aws:iam::6086785001234:role/eks-spot-termination-monitor
+
+canary:
+  enabled: false
+
+env:
+  - name: ENVIRONMENT
+    value: live
+  - name: GIN_MODE
+    value: release
+
+resources:
+  limits:
+   cpu: 500m
+   memory: 512Mi
+  requests:
+   cpu: 100m
+   memory: 256Mi
+
+affinity: {}
+  # nodeAffinity:
+  #   requiredDuringSchedulingIgnoredDuringExecution:
+  #     nodeSelectorTerms:
+  #     - matchExpressions:
+  #       - key: nature
+  #         operator: In
+  #         values:
+  #         - stateful
+  # podAntiAffinity:
+  #   preferredDuringSchedulingIgnoredDuringExecution:
+  #   - podAffinityTerm:
+  #       labelSelector:
+  #         matchExpressions:
+  #         - key: project
+  #           operator: In
+  #           values:
+  #           - holidu-search-ranking
+  #       topologyKey: kubernetes.io/hostname
+  #     weight: 100
+
+tolerations: []
+# - effect: NoSchedule
+#   key: nature
+#   operator: Equal
+#   value: stateful
+
+## Application Properties
+appConfig:
+  LOG_LEVEL: "debug"
+  WORK_DIR: "/home/"
+  KUBECONFIG: "/Users/sam/.kube/config" # Change this to your kubeconfig path in case you are using kubeconfig instead of in-cluster config
+  GO_WORKERS: "2" # Number of parallel executors to process the messages from SQS
+  QUEUE_URL: "https://sqs.eu-west-1.amazonaws.com/6086785001234/eks-spot-termination-monitor" # Change this to your SQS URL
+  ## Polling configuration
+  CLIENT_POLL_FREQUENCY: "4" # Frequency of polling the SQS queue
+  SQS_MAX_MESSAGE_COUNT: "1"
+  SQS_POLLING_INTERVAL: "20" # Long Polling
+  SQS_VISIBILITY_TIMEOUT: "30"
+
+## Monitoring
+monitoring:
+  enabled: true
+  prometheusLabel:
+    release: centralized-application-metrics
+  endpoints:
+    - interval: 10s
+      path: /metrics
+      port: http
+      scheme: http
+
+    
+  
+
